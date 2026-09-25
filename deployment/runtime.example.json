@@ -1,0 +1,9 @@
+{
+  "target": "Snapdragon X Elite / X Plus",
+  "runtime": "qualcomm-ai-runtime",
+  "model_artifacts": "PENDING",
+  "ai_hub_compile": "PENDING",
+  "profile": "PENDING",
+  "validation": "PENDING",
+  "compute_mapping": "UNKNOWN"
+}

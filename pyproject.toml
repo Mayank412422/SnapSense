@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "snapsense-edge"
+version = "0.1.0"
+description = "Local-first multimodal perception baseline for SnapSense Edge"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+speech = ["faster-whisper>=1.1"]
+vision = ["numpy>=1.26", "opencv-python-headless>=4.10"]
+all = ["faster-whisper>=1.1", "numpy>=1.26", "opencv-python-headless>=4.10"]
+
+[project.scripts]
+snapsense = "snapsense.app:main"
+
+[tool.setuptools.packages.find]
+include = ["snapsense*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

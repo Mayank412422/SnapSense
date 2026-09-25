@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SnapSense Edge</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header class="topbar"><div><span class="eyebrow">LOCAL PERCEPTION SYSTEM / 0.1</span><h1>SnapSense <em>Edge</em></h1></div><div class="live"><span></span> LOOPBACK ONLY · <b id="runtime-state">STARTING</b></div></header>
+<main class="layout">
+  <section class="sensor-panel"><div class="section-head"><div><span class="eyebrow">01 / SENSOR DECK</span><h2>Input surface</h2></div><button id="connect">Enable sensors</button></div>
+    <div class="camera-frame"><video id="camera" autoplay muted playsinline></video><div id="camera-placeholder">CAMERA FEED<br><small>permission required</small></div><div class="scanline"></div></div>
+    <div class="sensor-row"><div class="sensor-chip"><b id="camera-state">OFFLINE</b><span>camera</span></div><div class="sensor-chip"><b id="mic-state">OFFLINE</b><span>microphone</span></div><div class="sensor-chip"><b>LOCAL</b><span>network</span></div></div>
+    <div class="worker-grid"><article class="worker-card"><div><span class="eyebrow">VISION WORKER</span><b id="vision-status">UNAVAILABLE</b></div><span id="vision-model">YOLOv4-Tiny</span><p id="detections">No detections returned.</p></article><article class="worker-card"><div><span class="eyebrow">SPEECH WORKER</span><b id="speech-status">UNAVAILABLE</b></div><span id="speech-model">Whisper-Tiny</span><p id="transcript">Waiting for microphone permission.</p></article></div>
+  </section>
+  <section class="decision-panel"><div class="section-head"><div><span class="eyebrow">02 / LOCAL DECISION</span><h2>Working context</h2></div><span class="status-pill">DETERMINISTIC</span></div>
+    <div class="modes" role="tablist"><button class="mode active" data-mode="study">Study</button><button class="mode" data-mode="interview">Interview</button><button class="mode" data-mode="coding">Coding</button></div>
+    <div class="signal-card"><span class="eyebrow">CURRENT GUIDANCE</span><h3 id="guidance">Waiting for worker output.</h3><p id="rationale">No active signals.</p></div>
+    <div class="telemetry"><span class="eyebrow">RUNTIME TELEMETRY / HOST CPU ONLY</span><div class="metric-grid" id="metrics"></div></div>
+    <div class="model-list"><span class="eyebrow">MODEL WORKERS</span><div><b>Vision</b><span>RTMDet / YOLOv4-Tiny · configurable</span></div><div><b>Speech</b><span>Whisper-Tiny · configurable</span></div><div><b>Target</b><span>Snapdragon NPU · PENDING</span></div></div>
+  </section>
+</main><footer>RAW MEDIA IS PROCESSED TRANSIENTLY ON LOOPBACK <span>HOST MEASUREMENTS ONLY · SNAPDRAGON VALIDATION PENDING</span></footer><script src="/app.js"></script>
+</body></html>
