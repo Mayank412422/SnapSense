@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
+import io
 import tempfile
 from functools import lru_cache
 from typing import Any, Protocol
@@ -69,6 +70,7 @@ class WhisperTinyModel:
         if not audio:
             return SpeechContext(model=self.name, status="NO_INPUT")
         try:
+            diagnostics = inspect_audio_bytes(audio)
             model = self._load()
             with tempfile.NamedTemporaryFile(suffix=".webm") as audio_file:
                 audio_file.write(audio)
@@ -76,11 +78,41 @@ class WhisperTinyModel:
                 segments, info = model.transcribe(audio_file.name, vad_filter=True)
                 transcript = " ".join(segment.text.strip() for segment in segments).strip()
             confidence = float(info.language_probability) if info.language_probability is not None else None
-            return SpeechContext(transcript=transcript, confidence=confidence, model=self.name, status="MEASURED")
+            status = "MEASURED" if transcript else "NO_SPEECH"
+            return SpeechContext(transcript=transcript, confidence=confidence, model=self.name, status=status, **diagnostics)
         except ModelUnavailableError:
             raise
         except Exception as error:
             raise ModelInferenceError(f"Whisper-Tiny failed: {error}") from error
+
+
+def inspect_audio_bytes(audio: bytes) -> dict[str, Any]:
+    """Decode transient audio and return metadata without retaining media bytes."""
+    try:
+        import av
+        import numpy as np
+        with av.open(io.BytesIO(audio)) as container:
+            stream = next(iter(container.streams.audio), None)
+            if stream is None:
+                raise ModelInferenceError("audio container has no audio stream")
+            frames = list(container.decode(stream))
+            sample_count = sum(frame.samples for frame in frames)
+            nonzero_samples = sum(int(np.count_nonzero(frame.to_ndarray())) for frame in frames)
+            sample_rate = stream.rate or stream.codec_context.sample_rate
+            duration_ms = sample_count / sample_rate * 1000 if sample_rate else None
+            return {
+                "audio_bytes": len(audio),
+                "audio_format": container.format.name,
+                "audio_codec": stream.codec_context.name,
+                "audio_duration_ms": duration_ms,
+                "audio_sample_rate": sample_rate,
+                "audio_channels": stream.codec_context.channels,
+                "audio_nonzero_samples": nonzero_samples,
+            }
+    except ModelInferenceError:
+        raise
+    except Exception as error:
+        raise ModelInferenceError(f"audio decode failed: {error}") from error
 
 
 @dataclass

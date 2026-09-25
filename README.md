@@ -51,6 +51,12 @@ PYTHONPATH=. python3 scripts/benchmark_models.py --image "$SNAPSENSE_REAL_VISION
 PYTHONPATH=. python3 scripts/benchmark_app.py --image "$SNAPSENSE_REAL_VISION_IMAGE" --audio "$SNAPSENSE_REAL_AUDIO"
 ```
 
+Inspect the exact bytes from a browser capture before transcription:
+
+```bash
+PYTHONPATH=. python3 scripts/inspect_speech_audio.py /path/to/browser-capture.webm --transcribe
+```
+
 The model directory and media fixtures are ignored and must not be committed. See [docs/REQUIREMENTS_CHECKLIST.md](docs/REQUIREMENTS_CHECKLIST.md) for the complete implementation audit.
 
 Run the minimal checks independently with:

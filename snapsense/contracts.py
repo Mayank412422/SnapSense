@@ -14,6 +14,13 @@ class SpeechContext:
     model: str = "Whisper-Tiny"
     status: str = Unknown
     timestamp_ms: int | None = None
+    audio_bytes: int | None = None
+    audio_format: str | None = None
+    audio_codec: str | None = None
+    audio_duration_ms: float | None = None
+    audio_sample_rate: int | None = None
+    audio_channels: int | None = None
+    audio_nonzero_samples: int | None = None
 
 
 @dataclass(frozen=True)

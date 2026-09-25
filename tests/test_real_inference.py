@@ -4,7 +4,7 @@ from pathlib import Path
 
 from snapsense.contracts import ApplicationContext, SpeechContext, VisualContext
 from snapsense.fusion import fuse_context
-from snapsense.models import configured_speech_model, configured_vision_model
+from snapsense.models import configured_speech_model, configured_vision_model, inspect_audio_bytes
 
 
 class RealModelIntegrationTests(unittest.TestCase):
@@ -25,6 +25,18 @@ class RealModelIntegrationTests(unittest.TestCase):
         self.assertTrue(result.transcript.strip())
         context = fuse_context("study", speech=result, visual=VisualContext(), application=ApplicationContext("real speech test"), timestamp_ms=1)
         self.assertIn("speech", context.available_signals)
+
+    @unittest.skipUnless(os.getenv("SNAPSENSE_BROWSER_AUDIO_FIXTURE") and (os.getenv("SNAPSENSE_ENABLE_WHISPER") or os.getenv("SNAPSENSE_WHISPER_MODEL")), "browser audio fixture and Whisper not configured")
+    def test_browser_audio_decodes_and_reaches_whisper(self):
+        payload = Path(os.environ["SNAPSENSE_BROWSER_AUDIO_FIXTURE"]).read_bytes()
+        metadata = inspect_audio_bytes(payload)
+        self.assertEqual(metadata["audio_codec"], "opus")
+        self.assertGreater(metadata["audio_bytes"], 0)
+        self.assertGreater(metadata["audio_nonzero_samples"], 0)
+        self.assertGreater(metadata["audio_duration_ms"], 1000)
+        result = configured_speech_model().transcribe(payload)
+        self.assertEqual(result.status, "MEASURED")
+        self.assertTrue(result.transcript.strip())
 
 
 if __name__ == "__main__":
